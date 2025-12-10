@@ -2,12 +2,9 @@
 # coding: utf-8
 
 # In[1]:
-
-
 import pandas as pd
 import numpy as np
 from pathlib import Path
-
 def extract_data(path="financial_inclusion_dataset.csv"):
     return pd.read_csv(path)
 
@@ -15,14 +12,8 @@ def extract_data(path="financial_inclusion_dataset.csv"):
 
 
 # In[2]:
-
-
 df.head()
-
-
 # In[2]:
-
-
 def clean_data(df):
     df = df.copy()
     # drop exact duplicates
@@ -47,60 +38,33 @@ def clean_data(df):
              df.loc[df[c] < 0,c] = np.nan
         return df
         
-
-
 # In[10]:
-
-
 df
 
-
 # In[3]:
-
-
 def transform_data(df):
     df = df.copy()
     # Normalize has_bank_account field (yes, no, unknown → 1/0/NaN).
     df['has_bank_account'] = df['has_bank_account'].astype(str)
     df['has_bank_account'] = (df['has_bank_account'].str.lower().replace({'yes': 1,'no': 0,'unknown': np.nan}))  
     return df
-
-
-
-
-
-
-
 # In[14]:
-
-
 def validate_data(df):
     problems = []
     #nonegativeamounts
     df = df[df['monthly_income'] >= 0]
     if(df['monthly_income'] < 0).any():
-        problems.append("Negative Amount found")
-       
+        problems.append("Negative Amount found")       
     return problems
 
-
-
 # In[5]:
-
-
 ##df.to_csv("financial_inclusion_dataset.csv")
-
 def save_data(df, filename="financial_inclusion_dataset_new.csv"):
     Path(filename).parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(filename, index=False)
     return filename
 
-
-
-
 # In[15]:
-
-
 if __name__ == "__main__":
     df = extract_data("financial_inclusion_dataset.csv")
     dfc = clean_data(df)
@@ -108,11 +72,8 @@ if __name__ == "__main__":
     problems = validate_data(dft)
     print("Validation problems:", problems)
     save_data(dfc, "financial_inclusion_dataset_new.csv")
-    print("Saved financial_inclusion_dataset.csv")
-    
+    print("Saved financial_inclusion_dataset.csv")  
 
-
-# In[ ]:
 
 
 

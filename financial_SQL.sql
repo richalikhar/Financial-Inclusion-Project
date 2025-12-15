@@ -29,9 +29,9 @@ ORDER BY
 #	Segment users by financial inclusion status.
     SELECT 
     CASE
-        WHEN has_bank_account = 'Yes' AND mobile_money_user = 'Yes'
+        WHEN has_bank_account = '1' AND mobile_money_user = '1'
             THEN 'Fully Included'
-        WHEN has_bank_account = 'Yes' OR mobile_money_user = 'Yes'
+        WHEN has_bank_account = '1' OR mobile_money_user = '0'
             THEN 'Partially Included'
         ELSE 'Excluded'
     END AS financial_inclusion_status,

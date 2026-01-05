@@ -10,27 +10,41 @@ def extract_data(path="financial_inclusion_dataset.csv"):
 # In[2]:
 def clean_data(df):
     df = df.copy()
-    # drop exact duplicates
     df = df.drop_duplicates()
-    # Standardize date type
-    num_cols = ['mobile_money_user','loan_access','age','monthly_income']
+    
+    # 1. Fix Types First
+    num_cols = ['mobile_money_user', 'loan_access', 'age', 'monthly_income']
     for c in num_cols:
         if c in df.columns:
-            df[c]=pd.to_numeric(df[c],errors='coerce')
-    if 'age' in df.columns:     
-        df['age'] = df['age'].fillna(df['age'].median().round(0))
+            df[c] = pd.to_numeric(df[c], errors='coerce')
+
+    # 2. Handle Negatives & Outliers BEFORE filling NaNs
+    # (If we do this later, we create new NaNs that don't get filled)
     if 'monthly_income' in df.columns:
-        df['monthly_income'] = df['monthly_income'].fillna(df['monthly_income'].median().round(0))
+        df.loc[df['monthly_income'] < 0, 'monthly_income'] = np.nan
+        
+    if 'age' in df.columns:
+        # Set realistic bounds for financial data (e.g., 18 to 100)
+        df.loc[(df['age'] < 18) | (df['age'] > 100), 'age'] = np.nan
+
+    # 3. Now Impute (Fill) the Missing Values
+    if 'age' in df.columns:     
+        df['age'] = df['age'].fillna(df['age'].median()).round(0)
+    
+    if 'monthly_income' in df.columns:
+        df['monthly_income'] = df['monthly_income'].fillna(df['monthly_income'].median()).round(2)
+        
     if 'country' in df.columns:
-        df['country'] = df['country'].fillna('None')
+        df['country'] = df['country'].fillna('Unknown')
+        
     if 'education_level' in df.columns:
-        df['education_level'] = df['education_level'].fillna('None')
+        df['education_level'] = df['education_level'].fillna('Unknown')
+        
     if 'gender' in df.columns:
         df['gender'] = df['gender'].fillna('Unknown')
-    for c in  ['monthly_income','age','mobile_money_user']:
-        if c in df.columns:
-             df.loc[df[c] < 0,c] = np.nan
-    return df         
+
+    return df
+   
 
 
 # In[3]:

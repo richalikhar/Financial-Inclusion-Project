@@ -27,13 +27,14 @@ ORDER BY
     mobile_money_user; 
  
 #	Segment users by financial inclusion status.
-    SELECT 
+   SELECT 
     CASE
-        WHEN has_bank_account = '1' AND mobile_money_user = '1'
+        WHEN has_bank_account = 1 AND mobile_money_user = 1
             THEN 'Fully Included'
-        WHEN has_bank_account = '1' OR mobile_money_user = '1'
+        WHEN (has_bank_account = 1 AND mobile_money_user = 0) 
+              OR (has_bank_account = 0 AND mobile_money_user = 1)        
             THEN 'Partially Included'
-        ELSE 'Excluded'
+            ELSE 'Excluded'
     END AS financial_inclusion_status,
     COUNT(*) AS user_count
 FROM financial_inclusion_project_schema.financial_inclusion_dataset_new
